@@ -1,7 +1,11 @@
-from decimal import Decimal, InvalidOperation
+from matching_engine.books.lob import LimitOrderBook
 from matching_engine.orders.order import Order
+from decimal import Decimal, InvalidOperation
 
 class MatchingEngine:
+    def __init__(self) -> None:
+        self.lob = LimitOrderBook()
+
     @staticmethod
     def _parse_decimal(token: str) -> Decimal | None:
         try:
@@ -59,4 +63,8 @@ class MatchingEngine:
                 print(">>> Ordem inválida")
                 continue
 
-            order = Order(side=order_dict["side"], order_type=order_dict["tipo"], quantity=order_dict["tqy"], price=order_dict["price"])
+            order = Order(side=order_dict["side"], type=order_dict["tipo"], quantity=order_dict["qty"], price=order_dict["price"])
+            trades = self.lob.submit(order=order)
+            # TODO: entregar a ordem ao livro e cruzar contra o lado oposto.
+            print(trades)
+            print()

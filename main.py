@@ -6,5 +6,5 @@ Utilize 'quit' para sair
 """
 
 if __name__ == "__main__":
-    me = MatchingEngine()
-    me.run()
+    matching_engine = MatchingEngine()
+    matching_engine.run()
