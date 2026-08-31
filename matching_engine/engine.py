@@ -54,9 +54,12 @@ class MatchingEngine:
         print(">>> Match engine aberta!\n")
         while True:
             raw_order = input(">>> Digite sua ordem: ")
-            if raw_order.strip().lower() == "quit":
+            if raw_order == "quit":
                 print(">>> Match engine fechada!")
                 break
+            if raw_order == "print book":
+                print(self.lob.render())
+                continue
 
             order_dict = self._parse_order(order=raw_order)
             if order_dict is None:
@@ -65,6 +68,5 @@ class MatchingEngine:
 
             order = Order(side=order_dict["side"], type=order_dict["tipo"], quantity=order_dict["qty"], price=order_dict["price"])
             trades = self.lob.submit(order=order)
-            # TODO: entregar a ordem ao livro e cruzar contra o lado oposto.
-            print(trades)
-            print()
+            for trade in self.lob.aggregate(trades):
+                print(trade)
