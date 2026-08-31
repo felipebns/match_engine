@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 @dataclass(frozen=True)
-class Trade:
+class Trade: 
     price: Decimal
     quantity: Decimal
     aggressor_order_id: str

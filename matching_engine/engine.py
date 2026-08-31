@@ -12,6 +12,8 @@ class MatchingEngine:
             value = Decimal(token)
         except InvalidOperation:
             return None
+        if not value.is_finite():
+            return None
         if value <= 0:
             return None
         return value

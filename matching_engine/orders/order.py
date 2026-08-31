@@ -38,11 +38,3 @@ class Order:
 
     def cancel(self) -> None:
         self.status = "CANCELLED"
-
-    def __repr__(self) -> str:
-        # pra que isso ? pq não __str__ ??
-        price = "market" if self.price is None else f"@ {self.price}"
-        return (
-            f"<Order {self.order_id} {self.side} "
-            f"{self.remaining_quantity}/{self.quantity} {price} {self.status}>"
-        )

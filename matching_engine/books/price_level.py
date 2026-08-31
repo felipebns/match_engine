@@ -31,9 +31,3 @@ class PriceLevel:
     def remove(self, order: Order) -> None:
         """Retira uma ordem especifica da fila."""
         self.orders.remove(order)
-
-    def __len__(self) -> int:
-        return len(self.orders)
-
-    def __repr__(self) -> str:
-        return f"<PriceLevel {self.price} x{len(self.orders)} qty={self.total_quantity}>"

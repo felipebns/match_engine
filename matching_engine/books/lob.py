@@ -58,8 +58,7 @@ class LimitOrderBook:
                 if resting.remaining_quantity == 0:
                     level.popleft()
 
-            if level.is_empty:
-                del opposite.levels[price]
+            opposite.discard_if_empty(price)
 
         return trades
 

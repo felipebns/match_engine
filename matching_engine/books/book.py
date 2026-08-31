@@ -19,10 +19,12 @@ class Book:
 
     def remove(self, order: Order) -> None:
         """Retira a ordem e descarta o nivel se ele ficar vazio."""
-        level = self.levels[order.price]
-        level.remove(order)
-        if level.is_empty:
-            del self.levels[order.price]
+        self.levels[order.price].remove(order)
+        self.discard_if_empty(order.price)
+
+    def discard_if_empty(self, price: Decimal) -> None:
+        if self.levels[price].is_empty:
+            del self.levels[price]
 
     def sorted_prices(self) -> list[Decimal]:
         """Precos do mais agressivo para o menos agressivo."""
@@ -32,11 +34,3 @@ class Book:
         """Melhor preco deste lado. None se o lado estiver vazio."""
         prices = self.sorted_prices()
         return prices[0] if prices else None
-
-    def best_level(self) -> PriceLevel | None:
-        """Nivel do melhor preco. None se o lado estiver vazio."""
-        price = self.best_price()
-        return self.levels[price] if price is not None else None
-
-    def __repr__(self) -> str:
-        return f"<Book {self.side} levels={self.sorted_prices()}>"
