@@ -103,8 +103,3 @@ a negocio nenhum.
 **`deque` e nao `list` no `PriceLevel`.** Remover da frente e a operacao mais
 frequente do matching: O(1) no deque, O(n) na list.
 
-## Ainda nao implementado
-
-Requisitos adicionais 3, 4 e 5: cancelamento, alteracao de ordem e ordens
-pegged. O indice `order_id -> Order` que o cancelamento exige tambem nao existe
-ainda.

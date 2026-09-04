@@ -16,10 +16,11 @@ python main.py
 ## Comandos
 
 ```
-limit  <buy|sell> <price> <qty>    ordem com preco fixo
-market <buy|sell> <qty>            ordem ao melhor preco disponivel
-print book                         mostra o livro
-quit                               sai
+limit  <buy|sell> <price> <qty>     ordem com preco fixo
+market <buy|sell> <qty>             ordem ao melhor preco disponivel
+cancel order <id>                   cancela uma ordem do livro
+print book                          mostra o livro
+quit                            sai
 ```
 
 ## Testes

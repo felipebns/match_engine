@@ -59,9 +59,17 @@ class MatchingEngine:
             if raw_order == "quit":
                 print(">>> Match engine fechada!")
                 break
-            if raw_order == "print book":
-                print(self.lob.render())
+            elif raw_order == "print book":
+                self.lob.render()
                 continue
+
+            try:
+                cancel, order, order_id = raw_order.split()
+                if cancel == "cancel" and order == "order" and order_id is not None:
+                    self.lob.cancel_order(order_id=order_id)
+                    continue
+            except ValueError:
+                pass
 
             order_dict = self._parse_order(order=raw_order)
             if order_dict is None:

@@ -8,6 +8,7 @@ class LimitOrderBook:
         self.bid_side = Book("buy")
         self.ask_side = Book("sell")
         self.trades: list[Trade] = []
+        self.order_book: dict[str, str] = {}
 
     def side_book(self, side: str) -> Book:
         """Devolve o Book do lado pedido."""
@@ -62,13 +63,6 @@ class LimitOrderBook:
 
         return trades
 
-    def submit(self, order: Order) -> list[Trade]:
-        trades = self._match(order)
-        if order.type == "limit" and order.remaining_quantity > 0:
-            self.side_book(order.side).add(order)
-        self.trades.extend(trades)
-        return trades
-
     @staticmethod
     def aggregate(trades: list[Trade]) -> list[Trade]:
         agregados: list[Trade] = []
@@ -84,8 +78,26 @@ class LimitOrderBook:
             else:
                 agregados.append(trade)
         return agregados
+    
+    def submit(self, order: Order) -> list[Trade]:
+        trades = self._match(order)
+        if order.type == "limit" and order.remaining_quantity > 0:
+            self.side_book(order.side).add(order)
+            self.order_book[order.order_id] = order.side
+            print(f"Order created: {order.side} {order.quantity} @ {order.price} | OrderID: {order.order_id}")
+        self.trades.extend(trades)
+        return trades
 
-    def render(self) -> str:
+    def cancel_order(self, order_id: str) -> None:
+        try:
+            side = self.order_book[order_id]
+            del self.order_book[order_id]
+            book = self.side_book(side=side)
+            book.remove(order_id=order_id)
+        except KeyError:
+            print(f"Não há ordem com ID: {order_id} em LOB")
+
+    def render(self) -> None:
         """Livro em duas colunas, para visualizacao."""
         bids = [(p, self.bid_side.levels[p].total_quantity) for p in self.bid_side.sorted_prices()]
         asks = [(p, self.ask_side.levels[p].total_quantity) for p in self.ask_side.sorted_prices()]
@@ -95,4 +107,5 @@ class LimitOrderBook:
             left = f"{bids[i][1]} @ {bids[i][0]}" if i < len(bids) else ""
             right = f"{asks[i][1]} @ {asks[i][0]}" if i < len(asks) else ""
             lines.append(f"{left:<20}| {right}")
-        return "\n".join(lines)
+        book = "\n".join(lines)
+        print(book)
