@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-@dataclass(frozen=True)
+"""Classe que representa uma operação de negociação."""
+@dataclass(frozen=True) # Objeto imutável
 class Trade: 
     price: Decimal
     quantity: Decimal

@@ -36,7 +36,7 @@ def test_nivel_vazio_e_descartado(limit_buy):
     book = Book("buy")
     order = limit_buy(10, 100)
     book.add(order)
-    book.remove(order)
+    book.remove(order.order_id)
 
     assert book.is_empty
     assert book.best_price() is None

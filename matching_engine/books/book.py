@@ -39,6 +39,7 @@ class Book:
         return sorted(self.levels, reverse=(self.side == "buy"))
 
     def best_price(self) -> Decimal | None:
+        # best prices estão servindo de algo ?
         """Melhor preco deste lado. None se o lado estiver vazio."""
         prices = self.sorted_prices()
         return prices[0] if prices else None

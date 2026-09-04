@@ -103,3 +103,47 @@ a negocio nenhum.
 **`deque` e nao `list` no `PriceLevel`.** Remover da frente e a operacao mais
 frequente do matching: O(1) no deque, O(n) na list.
 
+## Cancelamento (requisito adicional 3)
+
+O desafio do cancelamento e que o comando so traz um identificador -- mas o
+livro e organizado por **preco**, nao por id. Sem indice, achar a ordem
+exigiria varrer todos os niveis dos dois lados.
+
+A solucao usa dois indices, um em cada camada:
+
+| Indice | Onde | Mapeia | Para que |
+|---|---|---|---|
+| `order_book` | `LimitOrderBook` | `order_id -> side` | descobrir em qual dos dois lados procurar |
+| `ids_to_orders` | `Book` | `order_id -> Order` | pegar a `Order` e, dela, o preco do nivel |
+
+O fluxo de `cancel_order(order_id)`:
+
+1. `LimitOrderBook` consulta `order_book` e descobre o lado (`buy`/`sell`);
+2. delega para o `Book` daquele lado;
+3. `Book` consulta `ids_to_orders` e obtem a propria `Order`;
+4. `order.price` indica o nivel; a ordem sai da fila daquele `PriceLevel`;
+5. o nivel e descartado se ficou vazio, e o id sai dos dois indices.
+
+Todos os passos sao O(1), exceto a remocao dentro do `deque`, que percorre a
+fila do nivel.
+
+**Guardar a `Order` e nao so o preco.** `ids_to_orders` poderia mapear
+`order_id -> price`, o que bastaria para achar o nivel. Mas o `deque.remove()`
+precisa da referencia do objeto para compara-lo por identidade -- com apenas o
+preco, seria preciso varrer a fila procurando o id. Guardando a `Order`, a
+referencia ja esta em maos.
+
+**Ordens executadas saem dos indices.** Quando uma ordem e totalmente
+executada durante o matching, ela e removida da fila e tambem dos dois
+indices. Sem isso os dicionarios cresceriam indefinidamente, e um cancelamento
+tardio encontraria uma entrada que nao corresponde a nada no livro.
+
+**Market nao pode ser cancelada.** Ela nunca repousa no livro, entao nunca
+entra nos indices. Tentar cancelar uma market cai na mesma mensagem de "ordem
+nao encontrada" -- o que esta correto, porque de fato nao ha nada para
+cancelar.
+
+**`PriceLevel` nao guarda o proprio preco.** O preco ja e a chave do
+dicionario `levels` no `Book`, e cada `Order` tambem carrega o seu. Um terceiro
+lugar guardando a mesma informacao seria redundancia a manter sincronizada.
+

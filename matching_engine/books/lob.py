@@ -10,10 +10,6 @@ class LimitOrderBook:
         self.trades: list[Trade] = []
         self.order_book: dict[str, str] = {}
 
-    def side_book(self, side: str) -> Book:
-        """Devolve o Book do lado pedido."""
-        return self.bid_side if side == "buy" else self.ask_side
-
     @property
     def best_bid(self) -> Decimal | None:
         return self.bid_side.best_price()
@@ -42,29 +38,9 @@ class LimitOrderBook:
             resting_order_id=resting.order_id,
         )
 
-    def _match(self, order: Order) -> list[Trade]:
-        trades: list[Trade] = []
-        opposite = self.side_book(order.opposite_side)
-
-        for price in opposite.sorted_prices():
-            if order.remaining_quantity == 0:
-                break
-            if not self._crosses(order, price):
-                break
-
-            level = opposite.levels[price]
-            while not level.is_empty and order.remaining_quantity > 0:
-                resting = level.peek()
-                trades.append(self._execute(order, resting))
-                if resting.remaining_quantity == 0:
-                    level.popleft()
-
-            opposite.discard_if_empty(price)
-
-        return trades
-
     @staticmethod
     def aggregate(trades: list[Trade]) -> list[Trade]:
+        """Agrega trades com o mesmo preço."""
         agregados: list[Trade] = []
         for trade in trades:
             if agregados and agregados[-1].price == trade.price:
@@ -78,7 +54,35 @@ class LimitOrderBook:
             else:
                 agregados.append(trade)
         return agregados
-    
+
+    def _match(self, order: Order) -> list[Trade]:
+        trades: list[Trade] = []
+        opposite = self.side_book(order.opposite_side)
+
+        for price in opposite.sorted_prices():
+            if order.remaining_quantity == 0:
+                break
+            if not self._crosses(order, price):
+                break
+
+            level = opposite.levels[price]
+            while not level.is_empty and order.remaining_quantity > 0:
+                resting = level.peek()
+                trades.append(self._execute(aggressor=order, resting=resting))
+                if resting.remaining_quantity == 0:
+                    level.popleft()
+
+                    opposite.ids_to_orders.pop(resting.order_id, None)
+                    self.order_book.pop(resting.order_id, None)
+
+            opposite.discard_if_empty(price)
+
+        return trades
+
+    def side_book(self, side: str) -> Book:
+        """Devolve o Book do lado pedido."""
+        return self.bid_side if side == "buy" else self.ask_side
+
     def submit(self, order: Order) -> list[Trade]:
         trades = self._match(order)
         if order.type == "limit" and order.remaining_quantity > 0:
