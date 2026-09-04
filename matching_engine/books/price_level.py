@@ -4,7 +4,6 @@ from decimal import Decimal
 
 class PriceLevel:
     def __init__(self) -> None:
-        #retirei o atributo price pq ele não fazia nada
         self.orders: deque[Order] = deque() # deque é muito mais rápido para a operação pop, muito frequente
 
     @property

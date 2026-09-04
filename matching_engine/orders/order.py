@@ -10,7 +10,7 @@ class Order:
         self.quantity = quantity
         self.price = price
 
-        self.order_id = self._next_order_id()
+        self.order_id = self.next_order_id()
         self.filled_quantity = Decimal(0)
         self.status = "NEW"
 
@@ -29,7 +29,7 @@ class Order:
         """Lado contrario -- usado para achar o livro contra o qual cruzar."""
         return "sell" if self.side == "buy" else "buy"
 
-    def _next_order_id(self) -> str:
+    def next_order_id(self) -> str:
         return f"order-{next(ID_COUNTER)}"
 
     def fill(self, quantity: Decimal) -> None:

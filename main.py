@@ -5,6 +5,7 @@ Matching Engine roda como uma CLI, mande a order para preencher o Book.
 limit  <buy|sell> <price> <qty>     ordem com preco fixo
 market <buy|sell> <qty>             ordem ao melhor preco disponivel
 cancel order <id>                   cancela uma ordem do livro
+update order <price> <qty> <id>     update de uma ordem no livro
 print book                          mostra o livro
 quit                                sai
 """

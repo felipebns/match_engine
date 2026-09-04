@@ -101,6 +101,15 @@ class LimitOrderBook:
         except KeyError:
             print(f"Não há ordem com ID: {order_id} em LOB")
 
+    def update_order(self, order_id: str, new_price: Decimal, new_quant: Decimal) -> None:
+        try:
+            side = self.order_book[order_id]
+            # o que fazer com esse item do order book ? provavelmente vou mudar o id dele...
+            book = self.side_book(side=side)
+            book.update(order_id=order_id, new_price=new_price, new_quant=new_quant)
+        except KeyError:
+            print(f"Não há ordem com ID: {order_id} em LOB")
+
     def render(self) -> None:
         """Livro em duas colunas, para visualizacao."""
         bids = [(p, self.bid_side.levels[p].total_quantity) for p in self.bid_side.sorted_prices()]
